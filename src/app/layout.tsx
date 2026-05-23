@@ -1,0 +1,38 @@
+import type { Metadata } from "next"
+import { Readex_Pro } from "next/font/google"
+import "./globals.css"
+import { CartProvider } from "@/lib/cart-context"
+
+const readexPro = Readex_Pro({
+  subsets: ["arabic"],
+  variable: "--font-arabic",
+})
+
+export const metadata: Metadata = {
+  title: "رضا السوري | للمأكولات السورية",
+  description: "أشهر المأكولات السورية في الهرم - شاورما، فتة، كريب، بروستد، وجبات عائلية. اطلب أونلاين عبر واتساب.",
+  keywords: ["رضا السوري", "مأكولات سورية", "شاورما", "الهرم", "فتة", "كريب", "بروستد", "وجبات سورية"],
+  openGraph: {
+    title: "رضا السوري | للمأكولات السورية",
+    description: "أشهر المأكولات السورية في الهرم - شاورما، فتة، كريب، بروستد",
+    type: "website",
+    locale: "ar_EG",
+    siteName: "رضا السوري",
+  },
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="ar" dir="rtl" className={readexPro.variable}>
+      <body className="min-h-screen">
+        <CartProvider>
+          {children}
+        </CartProvider>
+      </body>
+    </html>
+  )
+}
