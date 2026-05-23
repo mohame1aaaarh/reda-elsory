@@ -4,6 +4,17 @@ import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 
+interface Deal {
+  id: number
+  title_ar: string
+  description_ar: string | null
+  image_url: string | null
+  price: number
+  old_price: number | null
+  is_active: boolean
+  display_order: number
+}
+
 interface Category {
   id: number
   name_ar: string
@@ -35,11 +46,16 @@ interface MenuItem {
 export default function AdminMenu() {
   const [categories, setCategories] = useState<Category[]>([])
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
+  const [deals, setDeals] = useState<Deal[]>([])
   const [loading, setLoading] = useState(true)
   const [session, setSession] = useState<any>(null)
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null)
   const [newItem, setNewItem] = useState({ name_ar: "", category_id: 0 })
+  const [newDeal, setNewDeal] = useState({ title_ar: "", description_ar: "", price: "", old_price: "" })
+  const [dealsNote, setDealsNote] = useState("")
+  const [editingDealsNote, setEditingDealsNote] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [dealUploading, setDealUploading] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -54,13 +70,17 @@ export default function AdminMenu() {
   }, [])
 
   const loadData = async () => {
-    const [catRes, itemsRes] = await Promise.all([
+    const [catRes, itemsRes, dealsRes, noteRes] = await Promise.all([
       supabase.from("categories").select("*").order("display_order"),
       supabase.from("menu_items").select("*, options:item_options(*)").order("display_order"),
+      supabase.from("deals").select("*").order("display_order"),
+      supabase.from("settings").select("value").eq("key", "deals_note").single(),
     ])
 
     if (catRes.data) setCategories(catRes.data)
     if (itemsRes.data) setMenuItems(itemsRes.data)
+    if (dealsRes.data) setDeals(dealsRes.data)
+    if (noteRes.data) setDealsNote(noteRes.data.value || "")
     setLoading(false)
   }
 
@@ -150,6 +170,110 @@ export default function AdminMenu() {
     }
   }
 
+  const handleDealImageUpload = async (dealId: number, file: File) => {
+    setDealUploading(true)
+    const fileExt = file.name.split(".").pop()
+    const fileName = `deal-${dealId}-${Date.now()}.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from("menu-images")
+      .upload(fileName, file)
+
+    if (uploadError) {
+      alert("فشل رفع الصورة: " + uploadError.message)
+      setDealUploading(false)
+      return
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("menu-images")
+      .getPublicUrl(fileName)
+
+    await supabase
+      .from("deals")
+      .update({ image_url: urlData.publicUrl })
+      .eq("id", dealId)
+
+    setDealUploading(false)
+    loadData()
+  }
+
+  const handleAddDeal = async () => {
+    if (!newDeal.title_ar || !newDeal.price) {
+      alert("يرجى إدخال اسم العرض والسعر")
+      return
+    }
+
+    const { error } = await supabase.from("deals").insert({
+      title_ar: newDeal.title_ar,
+      description_ar: newDeal.description_ar || null,
+      price: parseFloat(newDeal.price),
+      old_price: newDeal.old_price ? parseFloat(newDeal.old_price) : null,
+    })
+
+    if (!error) {
+      setNewDeal({ title_ar: "", description_ar: "", price: "", old_price: "" })
+      loadData()
+    }
+  }
+
+  const handleDeleteDeal = async (dealId: number) => {
+    if (!confirm("هل أنت متأكد من حذف هذا العرض؟")) return
+    const { error } = await supabase.from("deals").delete().eq("id", dealId)
+    if (!error) loadData()
+  }
+
+  const handleDealToggleActive = async (dealId: number, current: boolean) => {
+    await supabase.from("deals").update({ is_active: !current }).eq("id", dealId)
+    loadData()
+  }
+
+  const handleSaveDealsNote = async () => {
+    await supabase.from("settings").upsert({ key: "deals_note", value: dealsNote }, { onConflict: "key" })
+    setEditingDealsNote(false)
+  }
+
+  const handleDeleteDealImage = async (dealId: number) => {
+    await supabase.from("deals").update({ image_url: null }).eq("id", dealId)
+    loadData()
+  }
+
+  const moveCategory = async (id: number, direction: "up" | "down") => {
+    const sorted = [...categories].sort((a, b) => a.display_order - b.display_order)
+    const idx = sorted.findIndex((c) => c.id === id)
+    if (idx === -1) return
+    if (direction === "up" && idx === 0) return
+    if (direction === "down" && idx === sorted.length - 1) return
+
+    const swap = direction === "up" ? sorted[idx - 1] : sorted[idx + 1]
+    const current = sorted[idx]
+
+    await Promise.all([
+      supabase.from("categories").update({ display_order: swap.display_order }).eq("id", current.id),
+      supabase.from("categories").update({ display_order: current.display_order }).eq("id", swap.id),
+    ])
+    loadData()
+  }
+
+  const moveItem = async (id: number, categoryId: number, direction: "up" | "down") => {
+    const itemsInCat = menuItems
+      .filter((i) => i.category_id === categoryId)
+      .sort((a, b) => a.display_order - b.display_order)
+    const idx = itemsInCat.findIndex((i) => i.id === id)
+    if (idx === -1) return
+    if (direction === "up" && idx === 0) return
+    if (direction === "down" && idx === itemsInCat.length - 1) return
+
+    const swap = direction === "up" ? itemsInCat[idx - 1] : itemsInCat[idx + 1]
+    const current = itemsInCat[idx]
+
+    await Promise.all([
+      supabase.from("menu_items").update({ display_order: swap.display_order }).eq("id", current.id),
+      supabase.from("menu_items").update({ display_order: current.display_order }).eq("id", swap.id),
+    ])
+    loadData()
+  }
+
   const handleAddOption = async (itemId: number, label_ar: string, price: number, is_size: boolean) => {
     const { error } = await supabase.from("item_options").insert({
       menu_item_id: itemId,
@@ -184,6 +308,143 @@ export default function AdminMenu() {
         >
           تسجيل خروج
         </button>
+      </div>
+
+      {/* Deals management */}
+      <div className="bg-white rounded-xl shadow-md p-6 mb-8 border-r-4 border-amber-400">
+        <div className="flex items-center gap-2 mb-5">
+          <span className="text-2xl">🔥</span>
+          <h2 className="text-lg font-bold">إدارة العروض</h2>
+        </div>
+
+        {/* Add new deal */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <input
+            type="text"
+            value={newDeal.title_ar}
+            onChange={(e) => setNewDeal({ ...newDeal, title_ar: e.target.value })}
+            placeholder="اسم العرض"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-amber-500"
+          />
+          <input
+            type="text"
+            value={newDeal.description_ar}
+            onChange={(e) => setNewDeal({ ...newDeal, description_ar: e.target.value })}
+            placeholder="وصف العرض (اختياري)"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-amber-500"
+          />
+          <input
+            type="number"
+            value={newDeal.price}
+            onChange={(e) => setNewDeal({ ...newDeal, price: e.target.value })}
+            placeholder="السعر"
+            className="w-24 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-amber-500"
+          />
+          <input
+            type="number"
+            value={newDeal.old_price}
+            onChange={(e) => setNewDeal({ ...newDeal, old_price: e.target.value })}
+            placeholder="السعر القديم"
+            className="w-28 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-amber-500"
+          />
+          <button
+            onClick={handleAddDeal}
+            className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-500 transition-colors"
+          >
+            إضافة عرض
+          </button>
+        </div>
+
+        {/* Deals note */}
+        <div className="mb-5 p-3 bg-amber-50 rounded-lg border border-amber-200">
+          <label className="block text-xs font-medium text-amber-800 mb-1.5">
+            رسالة أسفل عنوان العروض (تظهر للعملاء)
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={dealsNote}
+              onChange={(e) => setDealsNote(e.target.value)}
+              placeholder="مثال: عروض عيد الأضحى"
+              className="flex-1 px-3 py-1.5 border border-amber-300 rounded-lg text-sm outline-none focus:border-amber-500"
+            />
+            <button
+              onClick={handleSaveDealsNote}
+              className="px-4 py-1.5 bg-amber-600 text-white rounded-lg text-sm hover:bg-amber-500 transition-colors"
+            >
+              حفظ
+            </button>
+          </div>
+        </div>
+
+        {/* Existing deals */}
+        <div className="space-y-3">
+          {deals.length === 0 ? (
+            <p className="text-gray-400 text-sm text-center py-6">لا توجد عروض حالياً</p>
+          ) : (
+            deals.map((deal) => (
+              <div key={deal.id} className="flex items-center gap-3 bg-amber-50/50 rounded-lg p-3 border border-amber-100">
+                {deal.image_url ? (
+                  <div className="relative">
+                    <img src={deal.image_url} alt={deal.title_ar} className="w-14 h-14 object-cover rounded-lg" />
+                    <button
+                      onClick={() => handleDeleteDealImage(deal.id)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs hover:bg-red-600 flex items-center justify-center"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-14 h-14 bg-amber-100 rounded-lg flex items-center justify-center text-amber-400 text-lg">
+                    🏷️
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-gray-800 text-sm">{deal.title_ar}</span>
+                    <span className="text-amber-700 font-bold">{deal.price} جنيه</span>
+                    {deal.old_price && (
+                      <span className="text-gray-400 line-through text-xs">{deal.old_price} جنيه</span>
+                    )}
+                  </div>
+                  {deal.description_ar && (
+                    <p className="text-xs text-gray-500 truncate">{deal.description_ar}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleDealToggleActive(deal.id, deal.is_active)}
+                    className={`px-2 py-1 rounded text-xs font-medium ${
+                      deal.is_active
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-100 text-gray-500"
+                    }`}
+                  >
+                    {deal.is_active ? "نشط" : "غير نشط"}
+                  </button>
+                  <label className="text-xs bg-amber-100 px-2 py-1.5 rounded cursor-pointer hover:bg-amber-200 transition-colors">
+                    {dealUploading ? "..." : "صورة"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) handleDealImageUpload(deal.id, file)
+                      }}
+                    />
+                  </label>
+                  <button
+                    onClick={() => handleDeleteDeal(deal.id)}
+                    className="text-red-500 text-sm hover:text-red-700"
+                  >
+                    حذف
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Add new item */}
@@ -227,10 +488,30 @@ export default function AdminMenu() {
 
           return (
             <div key={category.id} className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-l from-primary/5 to-transparent px-6 py-4 border-b">
+              <div className="bg-gradient-to-l from-primary/5 to-transparent px-6 py-4 border-b flex items-center justify-between">
                 <h2 className="text-xl font-bold text-primary">
                   {category.emoji} {category.name_ar}
                 </h2>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => moveCategory(category.id, "up")}
+                    className="p-1.5 rounded hover:bg-primary/10 text-gray-500 hover:text-primary transition-colors"
+                    title="تحريك لأعلى"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => moveCategory(category.id, "down")}
+                    className="p-1.5 rounded hover:bg-primary/10 text-gray-500 hover:text-primary transition-colors"
+                    title="تحريك لأسفل"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               <div className="divide-y">
@@ -276,12 +557,32 @@ export default function AdminMenu() {
                       <div className="flex-1">
                         <div className="flex items-start justify-between">
                           <h3 className="text-lg font-bold text-gray-800">{item.name_ar}</h3>
-                          <button
-                            onClick={() => handleDeleteItem(item.id)}
-                            className="text-red-500 text-sm hover:text-red-700"
-                          >
-                            حذف
-                          </button>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => moveItem(item.id, item.category_id, "up")}
+                              className="p-1 rounded hover:bg-primary/10 text-gray-400 hover:text-primary transition-colors"
+                              title="تحريك لأعلى"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => moveItem(item.id, item.category_id, "down")}
+                              className="p-1 rounded hover:bg-primary/10 text-gray-400 hover:text-primary transition-colors"
+                              title="تحريك لأسفل"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteItem(item.id)}
+                              className="text-red-500 text-sm hover:text-red-700 pr-2"
+                            >
+                              حذف
+                            </button>
+                          </div>
                         </div>
 
                         {/* Price options */}

@@ -27,6 +27,18 @@ export interface ItemOption {
   display_order: number
 }
 
+export interface Deal {
+  id: number
+  title_ar: string
+  description_ar: string | null
+  image_url: string | null
+  price: number
+  old_price: number | null
+  is_active: boolean
+  display_order: number
+  created_at: string
+}
+
 export interface MenuWithItems extends Category {
   items: MenuItem[]
 }

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Navbar from "@/components/landing/Navbar"
 import HeroSection from "@/components/landing/HeroSection"
+import DealsSection from "@/components/DealsSection"
 import AboutSection from "@/components/landing/AboutSection"
 import StatsSection from "@/components/landing/StatsSection"
 import VideoSection from "@/components/landing/VideoSection"
@@ -27,6 +28,7 @@ export default function Home() {
         <HeroSection />
         <AboutSection />
         <StatsSection />
+        <DealsSection limit={1} showViewAll />
         <VideoSection />
         <LocationSection />
       </main>

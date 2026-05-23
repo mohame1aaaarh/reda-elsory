@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import MenuHeader from "@/components/menu/MenuHeader"
+import DealsSection from "@/components/DealsSection"
 import MenuSection from "@/components/MenuSection"
 import Footer from "@/components/Footer"
 import CartDrawer from "@/components/CartDrawer"
@@ -64,6 +65,7 @@ export default function MenuPage() {
           </div>
         ) : (
           <>
+            <DealsSection />
             <div className="bg-gradient-to-l from-gold/10 to-transparent border-b border-gold/10">
               <div className="max-w-5xl mx-auto px-4 py-8 text-center">
                 <h2 className="text-2xl md:text-3xl font-bold text-primary">المنيو</h2>

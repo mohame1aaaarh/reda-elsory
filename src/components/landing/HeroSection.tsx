@@ -5,7 +5,7 @@ export default function HeroSection() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background image — right-aligned on mobile, centered on desktop */}
       <div
-        className="absolute inset-0 bg-cover bg-right md:bg-center"
+        className="absolute inset-0 bg-cover bg-[right_0%] md:bg-[center_0%]"
         style={{ backgroundImage: "url('/header.jpg')" }}
       />
 
@@ -61,8 +61,16 @@ export default function HeroSection() {
           </a>
         </div>
 
+        {/* No branches note */}
+        <div className="mt-10 flex justify-center">
+          <div className="flex items-center gap-2 bg-white/[0.05] backdrop-blur-sm border border-white/5 rounded-full px-5 py-2 text-white/60 text-xs md:text-sm">
+            <span>⚠️</span>
+            <span>لا يوجد لدينا فروع أخرى</span>
+          </div>
+        </div>
+
         {/* Contact strip */}
-        <div className="mt-16 flex flex-wrap justify-center gap-3">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <a href="tel:01210001452" className="flex items-center gap-2 bg-white/[0.05] backdrop-blur-sm border border-white/5 rounded-full px-4 py-2 text-white/60 hover:text-white hover:border-white/20 transition-all text-xs">
             <span>📞</span>
             <span dir="ltr">01210001452</span>
@@ -73,7 +81,7 @@ export default function HeroSection() {
           </a>
           <div className="flex items-center gap-2 bg-white/[0.05] backdrop-blur-sm border border-white/5 rounded-full px-4 py-2 text-white/60 text-xs">
             <span>📍</span>
-            <span>14 ش عز الدين عمر - سيتي سنتر - الهرم</span>
+            <span>14 ش عز الدين عمر سباتس - الهرم</span>
           </div>
         </div>
       </div>

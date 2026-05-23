@@ -6,7 +6,7 @@ import CartButton from "./CartButton"
 
 const PHONE_1 = "01210001452"
 const PHONE_2 = "01120750278"
-const ADDRESS = "14 ش عز الدين عمر - سيتي سنتر - الهرم"
+const ADDRESS = "14 ش عز الدين عمر سباتس - الهرم"
 
 const categoryLinks = [
   { emoji: "🥙", name: "الفتة", slug: "fatteh" },

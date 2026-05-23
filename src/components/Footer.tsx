@@ -50,7 +50,7 @@ export default function Footer() {
                   <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0">
                     <span>📍</span>
                   </span>
-                  <span className="text-sm">14 ش عز الدين عمر - سيتي سنتر - الهرم</span>
+                  <span className="text-sm">14 ش عز الدين عمر سباتس - الهرم</span>
                 </div>
               </div>
             </div>

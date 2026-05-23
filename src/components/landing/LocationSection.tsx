@@ -21,7 +21,7 @@ export default function LocationSection() {
           <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-100">
             <div className="aspect-[4/3] bg-gray-100 relative">
               <iframe
-                src="https://www.google.com/maps?q=14+ش+عز+الدين+عمر+سيتي+سنتر+الهرم&output=embed"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3455.5554881390854!2d31.1616669!3d29.992202299999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14584567ac665303%3A0xb4d54c810bb00d4e!2z2YXYt9i52YUg2LHYttinINin2YTYs9mI2LHZig!5e0!3m2!1sar!2seg!4v1779569061611!5m2!1sar!2seg"
                 width="100%"
                 height="100%"
                 style={{ border: 0, minHeight: "320px" }}
@@ -31,7 +31,7 @@ export default function LocationSection() {
                 title="موقع رضا السوري"
               />
               <a
-                href="https://maps.app.goo.gl/iptqVqaHGEks6DXJA"
+                href="https://maps.app.goo.gl/VEESx3UMp5brcMK66?g_st=aw"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-primary text-xs px-3 py-1.5 rounded-lg shadow-md hover:bg-white transition-colors"
@@ -51,7 +51,7 @@ export default function LocationSection() {
                 <div>
                   <h3 className="font-bold text-gray-800 mb-1">العنوان</h3>
                   <p className="text-gray-500 text-sm leading-relaxed">
-                    14 ش عز الدين عمر - سيتي سنتر
+                    14 ش عز الدين عمر سباتس
                     <br />
                     الهرم - الجيزة
                   </p>
