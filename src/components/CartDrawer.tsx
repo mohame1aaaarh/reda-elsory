@@ -24,7 +24,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
     message += "━━━━━━━━━━━━━━━━\n"
     message += `💰 *المجموع:* ${subtotal.toFixed(2)} ج\n`
-    message += `📊 *ضريبة 14%:* ${taxAmount.toFixed(2)} ج\n`
+    message += `📊 *الضريبة:* ${taxAmount.toFixed(2)} ج\n`
     message += `💵 *الإجمالي:* ${total.toFixed(2)} ج\n\n`
     message += "━━━━━━━━━━━━━━━━\n"
     message += "📍 يرجى إرسال العنوان ورقم التليفون للتواصل"
@@ -144,10 +144,12 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 <span>المجموع</span>
                 <span>{subtotal.toFixed(2)} ج</span>
               </div>
-              <div className="flex justify-between text-gray-500">
-                <span>ضريبة (14%)</span>
-                <span>{taxAmount.toFixed(2)} ج</span>
-              </div>
+              {taxAmount > 0 && (
+                <div className="flex justify-between text-gray-500">
+                  <span>ضريبة</span>
+                  <span>{taxAmount.toFixed(2)} ج</span>
+                </div>
+              )}
               <div className="flex justify-between font-bold text-lg text-primary border-t border-gray-100 pt-2">
                 <span>الإجمالي</span>
                 <span>{total.toFixed(2)} ج</span>

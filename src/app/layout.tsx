@@ -10,6 +10,7 @@ const readexPro = Readex_Pro({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://reda-elsory.vercel.app"),
   title: "رضا السوري | للمأكولات السورية",
   description: "أشهر المأكولات السورية في الهرم - شاورما، فتة، كريب، بروستد، وجبات عائلية. اطلب أونلاين عبر واتساب.",
   keywords: ["رضا السوري", "مأكولات سورية", "شاورما", "الهرم", "فتة", "كريب", "بروستد", "وجبات سورية"],

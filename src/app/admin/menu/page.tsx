@@ -51,6 +51,7 @@ export default function AdminMenu() {
   const [session, setSession] = useState<any>(null)
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null)
   const [newItem, setNewItem] = useState({ name_ar: "", category_id: 0 })
+  const [editingName, setEditingName] = useState<{ id: number; name: string } | null>(null)
   const [newDeal, setNewDeal] = useState({ title_ar: "", description_ar: "", price: "", old_price: "" })
   const [dealsNote, setDealsNote] = useState("")
   const [editingDealsNote, setEditingDealsNote] = useState(false)
@@ -140,6 +141,13 @@ export default function AdminMenu() {
       .eq("id", optionId)
 
     if (!error) loadData()
+  }
+
+  const handleRenameItem = async (itemId: number, newName: string) => {
+    if (!newName.trim()) return
+    await supabase.from("menu_items").update({ name_ar: newName }).eq("id", itemId)
+    setEditingName(null)
+    loadData()
   }
 
   const handleDeleteItem = async (itemId: number) => {
@@ -556,7 +564,27 @@ export default function AdminMenu() {
                       {/* Info */}
                       <div className="flex-1">
                         <div className="flex items-start justify-between">
-                          <h3 className="text-lg font-bold text-gray-800">{item.name_ar}</h3>
+                          {editingName?.id === item.id ? (
+                            <input
+                              type="text"
+                              value={editingName.name}
+                              onChange={(e) => setEditingName({ ...editingName, name: e.target.value })}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") handleRenameItem(item.id, editingName.name)
+                                if (e.key === "Escape") setEditingName(null)
+                              }}
+                              onBlur={() => handleRenameItem(item.id, editingName.name)}
+                              className="text-lg font-bold text-gray-800 border border-primary/30 rounded-lg px-2 py-1 outline-none focus:border-primary w-full max-w-xs"
+                              autoFocus
+                            />
+                          ) : (
+                            <h3
+                              className="text-lg font-bold text-gray-800 cursor-pointer hover:text-primary transition-colors"
+                              onClick={() => setEditingName({ id: item.id, name: item.name_ar })}
+                            >
+                              {item.name_ar}
+                            </h3>
+                          )}
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => moveItem(item.id, item.category_id, "up")}

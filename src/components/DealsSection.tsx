@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useCart } from "@/lib/cart-context"
+import { showCartToast } from "./CartToast"
 
 interface Deal {
   id: number
@@ -20,6 +22,7 @@ interface Props {
 export default function DealsSection({ limit, showViewAll }: Props) {
   const [deals, setDeals] = useState<Deal[]>([])
   const [note, setNote] = useState("")
+  const { addItem, items, updateQuantity } = useCart()
 
   useEffect(() => {
     Promise.all([
@@ -96,6 +99,57 @@ export default function DealsSection({ limit, showViewAll }: Props) {
                     </span>
                   </>
                 )}
+              </div>
+
+              {/* Add to cart */}
+              <div className="mt-4">
+                {(() => {
+                  const dealItemId = -deal.id
+                  const cartKey = `${dealItemId}-`
+                  const inCart = items.find((i) => `${i.menuItemId}-${i.optionLabel || ""}` === cartKey)
+                  const qty = inCart?.quantity || 0
+                  const cartId = inCart?.id
+
+                  if (qty > 0) {
+                    return (
+                      <div className="inline-flex items-center gap-0 rounded-xl overflow-hidden border border-amber-200 bg-white shadow-sm">
+                        <button
+                          onClick={() => cartId && updateQuantity(cartId, -1)}
+                          className="w-8 h-8 flex items-center justify-center text-amber-700 font-bold text-sm hover:bg-amber-600 hover:text-white transition-colors"
+                        >
+                          −
+                        </button>
+                        <span className="w-8 h-8 flex items-center justify-center bg-amber-50 text-amber-700 font-bold text-xs">
+                          {qty}
+                        </span>
+                        <button
+                          onClick={() => {
+                            addItem({ menuItemId: dealItemId, name: deal.title_ar, optionLabel: null, price: deal.price })
+                            showCartToast(`${deal.title_ar} +1`)
+                          }}
+                          className="w-8 h-8 flex items-center justify-center text-amber-700 font-bold text-sm hover:bg-amber-600 hover:text-white transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <button
+                      onClick={() => {
+                        addItem({ menuItemId: dealItemId, name: deal.title_ar, optionLabel: null, price: deal.price })
+                        showCartToast(`${deal.title_ar} تمت الإضافة 🎉`)
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-600 text-white rounded-xl text-sm font-bold transition-all hover:bg-amber-500 active:scale-95 shadow-md shadow-amber-600/20"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      </svg>
+                      أضف للسلة
+                    </button>
+                  )
+                })()}
               </div>
             </div>
 

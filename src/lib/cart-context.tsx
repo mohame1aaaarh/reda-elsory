@@ -23,7 +23,7 @@ interface CartContextType {
   total: number
 }
 
-const TAX_RATE = 0.14
+const TAX_RATE = 0
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
