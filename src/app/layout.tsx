@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { Readex_Pro } from "next/font/google"
 import "./globals.css"
 import { CartProvider } from "@/lib/cart-context"
-import EidPopup from "@/components/EidPopup"
+
 
 const readexPro = Readex_Pro({
   subsets: ["arabic"],
@@ -38,7 +38,6 @@ export default function RootLayout({
       <body className="min-h-screen">
         <CartProvider>
           {children}
-          <EidPopup />
         </CartProvider>
       </body>
     </html>
