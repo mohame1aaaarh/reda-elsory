@@ -10,7 +10,7 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
-  const { items, removeItem, updateQuantity, clearCart, subtotal, taxAmount, total, itemCount } = useCart()
+  const { items, removeItem, updateQuantity, clearCart, subtotal, taxAmount, discountAmount, total, totalAfterDiscount, itemCount } = useCart()
 
   const handleCheckout = () => {
     let message = "🛒 *طلب من رضا السوري*\n"
@@ -24,8 +24,9 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
     message += "━━━━━━━━━━━━━━━━\n"
     message += `💰 *المجموع:* ${subtotal.toFixed(2)} ج\n`
-    message += `📊 *الضريبة:* ${taxAmount.toFixed(2)} ج\n`
-    message += `💵 *الإجمالي:* ${total.toFixed(2)} ج\n\n`
+    if (taxAmount > 0) message += `📊 *الضريبة:* ${taxAmount.toFixed(2)} ج\n`
+    message += `🎉 *خصم 10%:* -${discountAmount.toFixed(2)} ج\n`
+    message += `💵 *الإجمالي بعد الخصم:* ${totalAfterDiscount.toFixed(2)} ج\n\n`
     message += "━━━━━━━━━━━━━━━━\n"
     message += "📍 يرجى إرسال العنوان ورقم التليفون للتواصل"
 
@@ -150,9 +151,13 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   <span>{taxAmount.toFixed(2)} ج</span>
                 </div>
               )}
+              <div className="flex justify-between text-green-600">
+                <span>🎉 خصم 10%</span>
+                <span>-{discountAmount.toFixed(2)} ج</span>
+              </div>
               <div className="flex justify-between font-bold text-lg text-primary border-t border-gray-100 pt-2">
-                <span>الإجمالي</span>
-                <span>{total.toFixed(2)} ج</span>
+                <span>الإجمالي بعد الخصم</span>
+                <span>{totalAfterDiscount.toFixed(2)} ج</span>
               </div>
             </div>
 

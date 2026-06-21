@@ -20,10 +20,13 @@ interface CartContextType {
   itemCount: number
   subtotal: number
   taxAmount: number
+  discountAmount: number
   total: number
+  totalAfterDiscount: number
 }
 
 const TAX_RATE = 0
+const DISCOUNT_RATE = 0.10
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
@@ -84,11 +87,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0)
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0)
   const taxAmount = subtotal * TAX_RATE
+  const discountAmount = subtotal * DISCOUNT_RATE
   const total = subtotal + taxAmount
+  const totalAfterDiscount = total - discountAmount
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, updateQuantity, clearCart, itemCount, subtotal, taxAmount, total }}
+      value={{ items, addItem, removeItem, updateQuantity, clearCart, itemCount, subtotal, taxAmount, discountAmount, total, totalAfterDiscount }}
     >
       {children}
     </CartContext.Provider>

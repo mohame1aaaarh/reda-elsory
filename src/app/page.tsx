@@ -11,6 +11,7 @@ import LocationSection from "@/components/landing/LocationSection"
 import Footer from "@/components/Footer"
 import CartDrawer from "@/components/CartDrawer"
 import CartToast from "@/components/CartToast"
+import DiscountNotice from "@/components/DiscountNotice"
 import CartBottomBar from "@/components/CartBottomBar"
 import ScrollToTop from "@/components/ScrollToTop"
 
@@ -21,6 +22,7 @@ export default function Home() {
     <>
       <Navbar onCartClick={() => setCartOpen(true)} />
       <CartToast />
+      <DiscountNotice />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
       <CartBottomBar onCartClick={() => setCartOpen(true)} />
 
