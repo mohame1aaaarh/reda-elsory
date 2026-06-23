@@ -18,12 +18,6 @@ export default function DiscountNotice() {
     setVisible(false)
   }
 
-  useEffect(() => {
-    if (!visible) return
-    const timer = setTimeout(handleDismiss, 5000)
-    return () => clearTimeout(timer)
-  }, [visible])
-
   if (!visible) return null
 
   return (
