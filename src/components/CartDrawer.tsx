@@ -25,7 +25,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     message += "━━━━━━━━━━━━━━━━\n"
     message += `💰 *المجموع:* ${subtotal.toFixed(2)} ج\n`
     if (taxAmount > 0) message += `📊 *الضريبة:* ${taxAmount.toFixed(2)} ج\n`
-    message += `🎉 *خصم 10%:* -${discountAmount.toFixed(2)} ج\n`
+    message += `⚽ *خصم 10% كأس العالم:* -${discountAmount.toFixed(2)} ج\n`
     message += `💵 *الإجمالي بعد الخصم:* ${totalAfterDiscount.toFixed(2)} ج\n\n`
     message += "━━━━━━━━━━━━━━━━\n"
     message += "📍 يرجى إرسال العنوان ورقم التليفون للتواصل"
@@ -151,9 +151,12 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   <span>{taxAmount.toFixed(2)} ج</span>
                 </div>
               )}
-              <div className="flex justify-between text-green-600">
-                <span>🎉 خصم 10%</span>
-                <span>-{discountAmount.toFixed(2)} ج</span>
+              <div className="flex justify-between text-emerald-600 bg-emerald-50 -mx-5 px-5 py-2 rounded-lg">
+                <span className="flex items-center gap-1">
+                  <span className="inline-block animate-wc-ball text-base">⚽</span>
+                  خصم كأس العالم 10%
+                </span>
+                <span className="font-bold">-{discountAmount.toFixed(2)} ج</span>
               </div>
               <div className="flex justify-between font-bold text-lg text-primary border-t border-gray-100 pt-2">
                 <span>الإجمالي بعد الخصم</span>

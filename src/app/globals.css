@@ -139,3 +139,14 @@ body {
 .animate-scale-in {
   animation: scale-in 0.3s ease-out forwards;
 }
+
+@keyframes wc-ball-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(15deg) scale(1.1); }
+  50% { transform: rotate(0deg) scale(1); }
+  75% { transform: rotate(-15deg) scale(1.1); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+.animate-wc-ball {
+  animation: wc-ball-spin 1.5s ease-in-out infinite;
+}
