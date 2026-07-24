@@ -34,11 +34,11 @@ export default function Footer() {
                 <span>📞</span> اتصل بنا
               </h4>
               <div className="space-y-3">
-                <a href="tel:01210001452" className="flex items-center justify-center md:justify-start gap-3 text-gray-400 hover:text-gold-light transition-colors group">
+                <a href="tel:01131627600" className="flex items-center justify-center md:justify-start gap-3 text-gray-400 hover:text-gold-light transition-colors group">
                   <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-gold/20 transition-colors">
                     <span className="text-gold-light text-sm">📞</span>
                   </span>
-                  <span dir="ltr" className="text-sm tracking-wider">01210001452</span>
+                  <span dir="ltr" className="text-sm tracking-wider">01131627600</span>
                 </a>
                 <a href="tel:01120750278" className="flex items-center justify-center md:justify-start gap-3 text-gray-400 hover:text-gold-light transition-colors group">
                   <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-gold/20 transition-colors">
@@ -85,7 +85,7 @@ export default function Footer() {
           {/* Bottom CTA */}
           <div className="mt-12 pt-8 border-t border-white/5 text-center">
             <a
-              href={`https://wa.me/201210001452`}
+              href={`https://wa.me/201131627600`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2.5 bg-green-600 hover:bg-green-500 text-white px-7 py-3.5 rounded-full font-bold text-sm transition-all hover:scale-105 active:scale-95 shadow-lg shadow-green-600/20"

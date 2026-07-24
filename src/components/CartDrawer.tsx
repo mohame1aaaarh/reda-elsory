@@ -1,9 +1,8 @@
 "use client"
 
-import { useState } from "react"
 import { useCart } from "@/lib/cart-context"
 
-const FACEBOOK_PAGE_ID = "61579250945799"
+const PHONE = "201131627600"
 
 interface CartDrawerProps {
   open: boolean
@@ -11,40 +10,27 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
-  const [copied, setCopied] = useState(false)
-  const { items, removeItem, updateQuantity, clearCart, subtotal, taxAmount, discountAmount, total, totalAfterDiscount, itemCount } = useCart()
+  const { items, removeItem, updateQuantity, clearCart, subtotal, taxAmount, total, itemCount } = useCart()
 
-  const buildMessage = () => {
-    let msg = "🛒 *طلب من رضا السوري*\n"
-    msg += "━━━━━━━━━━━━━━━━\n\n"
+  const handleCheckout = () => {
+    let message = "🛒 *طلب من رضا السوري*\n"
+    message += "━━━━━━━━━━━━━━━━\n\n"
 
     items.forEach((item) => {
-      msg += `• ${item.name}`
-      if (item.optionLabel) msg += ` (${item.optionLabel})`
-      msg += `\n  العدد: ${item.quantity} × ${item.price} ج = ${item.quantity * item.price} ج\n\n`
+      message += `• ${item.name}`
+      if (item.optionLabel) message += ` (${item.optionLabel})`
+      message += `\n  العدد: ${item.quantity} × ${item.price} ج = ${item.quantity * item.price} ج\n\n`
     })
 
-    msg += "━━━━━━━━━━━━━━━━\n"
-    msg += `💰 *المجموع:* ${subtotal.toFixed(2)} ج\n`
-    if (taxAmount > 0) msg += `📊 *الضريبة:* ${taxAmount.toFixed(2)} ج\n`
-    msg += `⚽ *خصم 10% كأس العالم:* -${discountAmount.toFixed(2)} ج\n`
-    msg += `💵 *الإجمالي بعد الخصم:* ${totalAfterDiscount.toFixed(2)} ج\n\n`
-    msg += "━━━━━━━━━━━━━━━━\n"
-    msg += "📍 يرجى إرسال العنوان ورقم التليفون للتواصل"
-    return msg
-  }
+    message += "━━━━━━━━━━━━━━━━\n"
+    message += `💰 *المجموع:* ${subtotal.toFixed(2)} ج\n`
+    if (taxAmount > 0) message += `📊 *الضريبة:* ${taxAmount.toFixed(2)} ج\n`
+    message += `💵 *الإجمالي:* ${total.toFixed(2)} ج\n\n`
+    message += "━━━━━━━━━━━━━━━━\n"
+    message += "📍 يرجى إرسال العنوان ورقم التليفون للتواصل"
 
-  const handleCheckout = async () => {
-    const message = buildMessage()
-    try {
-      await navigator.clipboard.writeText(message)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 6000)
-      window.open(`https://m.me/${FACEBOOK_PAGE_ID}`, "_blank")
-    } catch {
-      const url = `https://m.me/${FACEBOOK_PAGE_ID}`
-      window.open(url, "_blank")
-    }
+    const url = `https://wa.me/${PHONE}?text=${encodeURIComponent(message)}`
+    window.open(url, "_blank")
   }
 
   return (
@@ -82,23 +68,6 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             </button>
           </div>
         </div>
-
-        {/* Copy confirmation banner */}
-        {copied && (
-          <div className="bg-blue-600 text-white px-5 py-3 text-sm animate-fade-down border-b border-blue-500">
-            <div className="flex items-start gap-2">
-              <span className="text-lg shrink-0">📋</span>
-              <div>
-                <p className="font-bold text-xs">تم نسخ الطلب!</p>
-                <p className="text-blue-200 text-xs mt-0.5 leading-relaxed">
-                  تم نسخ الطلب إلى الحافظة. سيتم تحويلك إلى ماسنجر، قم بلصق الطلب (لصق) وإرساله.
-                  <br />
-                  <span className="opacity-70">⚠️ فيسبوك لا يسمح بإرسال الطلب تلقائياً حالياً، هذه الطريقة مؤقتة.</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Items */}
         <div className="flex-1 overflow-y-auto px-5 py-4" style={{ maxHeight: "calc(100vh - 220px)" }}>
@@ -181,34 +150,21 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   <span>{taxAmount.toFixed(2)} ج</span>
                 </div>
               )}
-              <div className="flex justify-between text-emerald-600 bg-emerald-50 -mx-5 px-5 py-2 rounded-lg">
-                <span className="flex items-center gap-1">
-                  <span className="inline-block animate-wc-ball text-base">⚽</span>
-                  خصم كأس العالم 10%
-                </span>
-                <span className="font-bold">-{discountAmount.toFixed(2)} ج</span>
-              </div>
               <div className="flex justify-between font-bold text-lg text-primary border-t border-gray-100 pt-2">
-                <span>الإجمالي بعد الخصم</span>
-                <span>{totalAfterDiscount.toFixed(2)} ج</span>
+                <span>الإجمالي</span>
+                <span>{total.toFixed(2)} ج</span>
               </div>
             </div>
 
             <button
               onClick={handleCheckout}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2"
+              className="w-full bg-green-600 hover:bg-green-500 text-white py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
-                <path d="M12 0C5.373 0 0 4.975 0 11.111c0 3.497 1.745 6.616 4.472 8.652V24l4.086-2.242c1.09.301 2.246.464 3.442.464 6.627 0 12-4.974 12-11.111C24 4.975 18.627 0 12 0zm1.193 14.963l-3.056-3.259-5.963 3.259L10.732 8.2l3.131 3.259L19.752 8.2l-6.559 6.763z" />
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
               </svg>
-              إرسال الطلب عبر ماسنجر
+              إرسال الطلب عبر واتساب
             </button>
-
-            <p className="text-[10px] text-gray-400 text-center leading-relaxed">
-              سيتم نسخ الطلب وتحويلك إلى ماسنجر، قم بلصق الطلب وإرساله.
-              <br />
-              ⚠️ هذه الطريقة مؤقتة لحين تفعيل الإرسال التلقائي
-            </p>
           </div>
         )}
       </div>

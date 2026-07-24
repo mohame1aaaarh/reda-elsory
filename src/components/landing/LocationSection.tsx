@@ -79,7 +79,7 @@ export default function LocationSection() {
                 <div>
                   <h3 className="font-bold text-gray-800 mb-1">اتصل بنا</h3>
                   <div className="space-y-1">
-                    <a href="tel:01210001452" className="block text-gray-500 text-sm hover:text-primary transition-colors" dir="ltr">01210001452</a>
+                    <a href="tel:01131627600" className="block text-gray-500 text-sm hover:text-primary transition-colors" dir="ltr">01131627600</a>
                     <a href="tel:01120750278" className="block text-gray-500 text-sm hover:text-primary transition-colors" dir="ltr">01120750278</a>
                   </div>
                 </div>
@@ -87,7 +87,7 @@ export default function LocationSection() {
             </div>
 
             <a
-              href={`https://wa.me/201210001452`}
+              href={`https://wa.me/201131627600`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2.5 bg-green-600 hover:bg-green-500 text-white w-full py-4 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-green-600/20"

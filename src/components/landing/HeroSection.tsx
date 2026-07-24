@@ -71,9 +71,9 @@ export default function HeroSection() {
 
         {/* Contact strip */}
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <a href="tel:01210001452" className="flex items-center gap-2 bg-white/[0.05] backdrop-blur-sm border border-white/5 rounded-full px-4 py-2 text-white/60 hover:text-white hover:border-white/20 transition-all text-xs">
+          <a href="tel:01131627600" className="flex items-center gap-2 bg-white/[0.05] backdrop-blur-sm border border-white/5 rounded-full px-4 py-2 text-white/60 hover:text-white hover:border-white/20 transition-all text-xs">
             <span>📞</span>
-            <span dir="ltr">01210001452</span>
+            <span dir="ltr">01131627600</span>
           </a>
           <a href="tel:01120750278" className="flex items-center gap-2 bg-white/[0.05] backdrop-blur-sm border border-white/5 rounded-full px-4 py-2 text-white/60 hover:text-white hover:border-white/20 transition-all text-xs">
             <span>📞</span>

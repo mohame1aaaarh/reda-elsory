@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 
 export default function WhatsAppButton() {
   const [visible, setVisible] = useState(false)
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "201210001452"
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "201131627600"
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 1000)

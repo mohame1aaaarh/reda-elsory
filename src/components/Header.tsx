@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import CartButton from "./CartButton"
 
-const PHONE_1 = "01210001452"
+const PHONE_1 = "01131627600"
 const PHONE_2 = "01120750278"
 const ADDRESS = "14 ش عز الدين عمر سباتس - الهرم"
 
